@@ -12,6 +12,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
@@ -21,6 +22,14 @@ import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
  * Created by Ivan on 2019-06-05.
  */
 public class ColorTextView extends android.support.v7.widget.AppCompatTextView {
+    /**
+     * StrikeThrough MODE
+     */
+    public static final int NONE = -1;
+    public static final int ALL = 0;
+    public static final int FIRST = 1;
+    public static final int SECOND = 2;
+
 
     private int padding = 0;
     private int color = 0;
@@ -30,6 +39,9 @@ public class ColorTextView extends android.support.v7.widget.AppCompatTextView {
     private String secondText = "";
     private int secondTextSize = 0;
     private Typeface secondTextTypeFace;
+    private boolean allCaps;
+
+    private int strikethroughMode = NONE;
 
 
     public ColorTextView(Context context) {
@@ -54,6 +66,8 @@ public class ColorTextView extends android.support.v7.widget.AppCompatTextView {
 
         padding = attributes.getInt(R.styleable.ColorTextView_ctv_padding_start, 16);
         paddingVertical = attributes.getInt(R.styleable.ColorTextView_ctv_padding_vertical, 12);
+        strikethroughMode = attributes.getInt(R.styleable.ColorTextView_ctv_strikethrough_mode, NONE);
+        allCaps = attributes.getBoolean(R.styleable.ColorTextView_ctv_all_caps, true);
 
         color = attributes.getColor(R.styleable.ColorTextView_ctv_color, ContextCompat.getColor(context, android.R.color.transparent));
         secondText = attributes.getString(R.styleable.ColorTextView_ctv_second_text);
@@ -102,10 +116,31 @@ public class ColorTextView extends android.support.v7.widget.AppCompatTextView {
     private void init() {
         String totalString = firstText + (TextUtils.isEmpty(secondText) ? "" : " " + secondText);
         setShadowLayer(convertDpToPixel(padding), 0, 0, 0);
-        Spannable spannableString = new SpannableString(totalString.toUpperCase());
+
+        Spannable spannableString = new SpannableString(allCaps ? totalString.toUpperCase() : totalString);
         spannableString.setSpan(new PaddingBackgroundColorSpan(
                         color, convertDpToPixel(padding), convertDpToPixel(paddingVertical)),
                 0, totalString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        /**
+         * StrikeThrough Mode
+         */
+        switch (strikethroughMode) {
+            case ALL:
+                spannableString.setSpan(new StrikethroughSpan(), 0, totalString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                break;
+
+            case FIRST:
+                spannableString.setSpan(new StrikethroughSpan(), 0, firstText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                break;
+
+            case SECOND:
+                spannableString.setSpan(new StrikethroughSpan(), firstText.length()+1, totalString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // +1 added because there is space
+
+                break;
+
+        }
+
 
         if (!TextUtils.isEmpty(secondText)) {
             spannableString.setSpan(new AbsoluteSizeSpan(convertSpToPixel(secondTextSize)), firstText.length(), totalString.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -134,5 +169,8 @@ public class ColorTextView extends android.support.v7.widget.AppCompatTextView {
         init();
     }
 
-
+    public void setStrikeLineFirst(int strikethroughMode) {
+        this.strikethroughMode = strikethroughMode;
+        init();
+    }
 }
