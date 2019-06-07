@@ -7,4 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.colortextviewlibrary.ColorTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"
+        app:ctv_second_text="Second text"
+        app:ctv_color="@color/colorPrimary"
+        tools:text="Test"/>
+
 </android.support.constraint.ConstraintLayout>
