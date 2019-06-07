@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 
 dependencies {
 
-	        implementation 'com.github.Juxtlie:ColorTextView:Tag'
+	        implementation 'com.github.Juxtlie:ColorTextView:0.1.1'
 	}
 
 
